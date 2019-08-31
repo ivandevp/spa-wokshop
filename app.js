@@ -32,21 +32,24 @@ function Home() {
 }
 
 function Posts() {
+  const posts = JSON.parse(window.localStorage.getItem('posts')) || [];
+
+  const postsList = posts.map(post => {
+    return `<li>${post.content} - ${post.publishDate}</li>`;
+  }).join(''); // '<li></li><li></li>'
   return `
+    <a href="/new-post">Nuevo post</a>
     <ul>
-      <li>Un post</li>
-      <li>Dos posts</li>
-      <li>Tres posts</li>
-      <li>Cuatro post</li>
+      ${postsList}
     </ul>
   `;
 }
 
 function NewPost() {
   return `
-    <form>
-      <textarea></textarea>
-      <button>Postear! 👍</button>
+    <form id="form" onsubmit="addPost(event)">
+      <textarea id="content"></textarea>
+      <button type="submit">Postear! 👍</button>
     </form>
   `;
 }
@@ -83,3 +86,25 @@ window.addEventListener('popstate', function() {
   const component = getComponentFromRoute(routes);
   render(component);
 });
+
+function addPost(event) {
+  event.preventDefault();
+
+  const addPostToDB = (post) => {
+    posts.push(post);
+    
+    window.localStorage.setItem('posts', JSON.stringify(posts));
+    window.history.pushState(/** state */ {}, 'Posts', '/posts');
+    window.dispatchEvent(new Event('popstate'));
+  };
+  
+  const content = document.getElementById('content').value;
+  let posts = JSON.parse(window.localStorage.getItem('posts')) || [];
+
+  const post = {
+    content,
+    publishDate: new Date(),
+  };
+
+  addPostToDB(post);
+}
