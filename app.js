@@ -22,7 +22,12 @@ const render = (component) => {
 
 function Home() {
   return `
-    <h1>Hola mundo</h1>
+    <h1>Labobook</h1>
+    <ul>
+      <a href="/posts">Vamo pal muro</a>
+      <a href="/new-post">Vamo a crear un post</a>
+      <a href="/tacos">Vamo x tacos</a>
+    </ul>
   `;
 }
 
@@ -62,4 +67,19 @@ const routes = [
 const component = getComponentFromRoute(routes);
 render(component);
 
+document.body.addEventListener('click', (event) => {
+  if (event.target.nodeName === 'A') {
+    event.preventDefault();
 
+    const title = event.target.textContent;
+    const url = event.target.href;
+    // redireccionar (cambiar la URL)
+    window.history.pushState(/** state */ {}, title, url);
+    window.dispatchEvent(new Event('popstate'));
+  }
+});
+
+window.addEventListener('popstate', function() {
+  const component = getComponentFromRoute(routes);
+  render(component);
+});
